@@ -2,10 +2,14 @@ $(function () {
     var container = $('#container');
     var userNameWrap = $('#username');
     var profileModal = $('#profile-modal');
+    var subscribeModal = $('#subscribe-modal');
     var inpFirstName = $('#inp-first-name');
     var inpLastName = $('#inp-last-name');
     var btnSendProfile = $('#btn-send-profile');
     var btnEditProfile = $('#btn-edit-profile');
+    var btnFollow = $('#btn-follow');
+    var inpFollow = $('#inp-follow');
+    var btnFollowAdd = $('#btn-follow-add');
     var inpPost = $('#inp-post');
     var btnSendPost = $('#btn-send-post');
     var postsWrap = $('#posts');
@@ -13,6 +17,7 @@ $(function () {
     var baseUrl = 'http://146.185.154.90:8000/blog/mkubibaev@gmail.com/';
     var postsUrl = baseUrl + 'posts';
     var postsByDateUrl = postsUrl + '?datetime=';
+    var subscribeUrl = baseUrl + 'subscribe';
     var lastPostDate = '';
 
     var addProfile = function () {
@@ -63,8 +68,8 @@ $(function () {
 
     var showPosts = function (posts) {
         posts.forEach(function (post) {
-            var card = $('<div class="card bg-light mb-2 p-3">');
-            var cardTitle = $('<span class="card-subtitle mb-2 text-muted">');
+            var card = $('<div class="card bg-light mb-3 p-3">');
+            var cardTitle = $('<span class="card-subtitle text-muted">');
             var cardText = $('<p class="card-text mb-0">');
             var cardFooter = $('<small class="text-right text-muted">');
 
@@ -102,8 +107,17 @@ $(function () {
         }
     };
 
+    var subscribe = function (userEmail) {
+        return $.ajax({
+            method: 'POST',
+            url: subscribeUrl,
+            data: userEmail
+        });
+    };
+
+
     var handleError = function (error) {
-        console.info(error);
+        console.log(error);
     };
 
     addProfile()
@@ -130,6 +144,12 @@ $(function () {
                 .then(showProfile)
                 .then(clearProfileForm)
                 .catch(handleError);
+
+            //Вывожу весь список заново с новым profile, иначе новый profile виден только в новхы сообщениях
+            getPosts(postsUrl)
+                .then(postsWrap.html(''))
+                .then(showPosts)
+                .catch(handleError);
         } else {
             alert('All fields required!');
         }
@@ -154,5 +174,38 @@ $(function () {
             alert('Enter post text!');
         }
     });
+
+    btnFollow.on('click', function () {
+        subscribeModal.modal('show');
+    });
+
+    btnFollowAdd.on('click', function () {
+        if (inpFollow.val()) {
+            var followUser = {};
+
+            followUser.email = inpFollow.val();
+
+            subscribe(followUser)
+                .then(showSubscribeResult); //при ошибке возвращатеся объект с ключом error
+
+            subscribeModal.modal('hide');
+            inpFollow.val('');
+
+        } else {
+            alert('Enter follow user email');
+        }
+    });
+
+    var showSubscribeResult = function (result) {
+        for (var key in result) {
+            if (key === 'error') {
+                alert(result.error);
+            } else {
+                alert('You subscribed!');
+                break;
+            }
+        }
+    }
+
 
 });
