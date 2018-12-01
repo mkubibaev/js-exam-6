@@ -1,5 +1,4 @@
 $(function () {
-    var container = $('#container');
     var userNameWrap = $('#username');
     var profileModal = $('#profile-modal');
     var subscribeModal = $('#subscribe-modal');
@@ -44,11 +43,6 @@ $(function () {
 
     var showProfile = function (profile) {
         userNameWrap.text(profile.firstName + ' ' + profile.lastName);
-    };
-
-    var clearProfileForm = function () {
-        inpFirstName.val('');
-        inpLastName.val('');
     };
 
     var getPosts = function (url) {
@@ -115,6 +109,18 @@ $(function () {
         });
     };
 
+    var showSubscribeResult = function (result) {
+        console.log(result);
+
+        //при ошибке возвращатеся объект с ключом error
+        for (var key in result) {
+            if (key === 'error') {
+                alert(result.error);
+                return false;
+            }
+        }
+        alert('You subscribed!');
+    };
 
     var handleError = function (error) {
         console.log(error);
@@ -131,6 +137,10 @@ $(function () {
         .then(watching)
         .catch(handleError);
 
+    btnEditProfile.on('click', function () {
+        profileModal.modal('show');
+    });
+
     btnSendProfile.on('click', function () {
         if (inpFirstName.val() && inpLastName.val()) {
             var profile = {};
@@ -140,12 +150,15 @@ $(function () {
 
             editProfile(profile)
                 .then(getProfile)
-                .then(profileModal.modal('hide'))
                 .then(showProfile)
-                .then(clearProfileForm)
                 .catch(handleError);
 
-            //Вывожу весь список заново с новым profile, иначе новый profile виден только в новхы сообщениях
+            profileModal.modal('hide');
+            inpFirstName.val('');
+            inpLastName.val('');
+
+            /* Вывожу весь список заново с новым profile, иначе новый profile виден только в новых сообщениях.
+            Но у других пользователей остается старый, надо ли... */
             getPosts(postsUrl)
                 .then(postsWrap.html(''))
                 .then(showPosts)
@@ -153,10 +166,6 @@ $(function () {
         } else {
             alert('All fields required!');
         }
-    });
-
-    btnEditProfile.on('click', function () {
-        profileModal.modal('show');
     });
 
     btnSendPost.on('click', function (event) {
@@ -186,7 +195,7 @@ $(function () {
             followUser.email = inpFollow.val();
 
             subscribe(followUser)
-                .then(showSubscribeResult); //при ошибке возвращатеся объект с ключом error
+                .then(showSubscribeResult);
 
             subscribeModal.modal('hide');
             inpFollow.val('');
@@ -195,17 +204,5 @@ $(function () {
             alert('Enter follow user email');
         }
     });
-
-    var showSubscribeResult = function (result) {
-        for (var key in result) {
-            if (key === 'error') {
-                alert(result.error);
-            } else {
-                alert('You subscribed!');
-                break;
-            }
-        }
-    }
-
 
 });
