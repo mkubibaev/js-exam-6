@@ -12,6 +12,85 @@
     <script src="js/exam-6.js"></script>
 </head>
 <body>
+    <div class="container py-3">
+        <div class="top d-flex justify-content-between mb-4">
+            <h2>Jhon Doe <button class="btn btn-outline-info btn-sm">Edit profile</button></h2>
+            <button class="btn btn-info">Follow user</button>
+        </div>
+        <div class="form mb-4">
+            <form>
+                <div class="form-row">
+                    <div class="col-8 col-sm-10">
+                        <input type="text" id="inp-message" class="form-control" placeholder="Whats happening?">
+                    </div>
+                    <div class="col-4 col-sm-2">
+                        <input type="submit" id="btn-send" class="form-control btn btn-primary" value="Send">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="messages">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <span class="card-subtitle mb-2 text-muted">John Doe said:</span>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <span class="card-subtitle mb-2 text-muted">John Doe said:</span>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <span class="card-subtitle mb-2 text-muted">John Doe said:</span>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="profile-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit profile</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" placeholder="First name">
+                    <input type="text" class="form-control" placeholder="Last name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="subscribe-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Follow user</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" placeholder="E-mail">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
