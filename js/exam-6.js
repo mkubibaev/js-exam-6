@@ -6,11 +6,14 @@ $(function () {
     var inpLastName = $('#inp-last-name');
     var btnSendProfile = $('#btn-send-profile');
     var btnEditProfile = $('#btn-edit-profile');
-    var btnSendMessage = $('#btn-send-message');
-    var inpMessage = $('#inp-message');
-    var messagesWrap = $('#messages');
+    var inpPost = $('#inp-post');
+    var btnSendPost = $('#btn-send-post');
+    var postsWrap = $('#posts');
 
     var baseUrl = 'http://146.185.154.90:8000/blog/mkubibaev@gmail.com/';
+    var postsUrl = baseUrl + 'posts';
+    var postsByDateUrl = postsUrl + '?datetime=';
+    var lastPostDate = '';
 
     var addProfile = function () {
         return $.ajax({
@@ -36,7 +39,6 @@ $(function () {
 
     var showProfile = function (profile) {
         userNameWrap.text(profile.firstName + ' ' + profile.lastName);
-        console.log(profile);
     };
 
     var clearProfileForm = function () {
@@ -44,32 +46,60 @@ $(function () {
         inpLastName.val('');
     };
 
-    var getMessages = function () {
+    var getPosts = function (url) {
         return $.ajax ({
             method: 'GET',
-            url: baseUrl + 'posts'
+            url: url
         });
     };
 
-    var sendMessage = function (message) {
+    var sendPost = function (post) {
         return $.ajax ({
             method: 'POST',
-            url: baseUrl + 'posts',
-            data: message,
+            url: postsUrl,
+            data: post,
         });
     };
 
-    var showMessages = function (messages) {
-        messages.forEach(function (message) {
+    var showPosts = function (posts) {
+        posts.forEach(function (post) {
             var card = $('<div class="card bg-light mb-2 p-3">');
             var cardTitle = $('<span class="card-subtitle mb-2 text-muted">');
-            var cardText = $('<p class="card-text">');
+            var cardText = $('<p class="card-text mb-0">');
+            var cardFooter = $('<small class="text-right text-muted">');
 
-            cardTitle.text(message.user.firstName + ' ' + message.user.lastName + ' said:');
-            cardText.text(message.message);
-            card.append(cardTitle, cardText);
-            messagesWrap.prepend(card);
+            var postDate = new Date(post.datetime);
+            var formatedDate = postDate.getHours() + ':' + postDate.getMinutes() + ' ' +
+                postDate.getDay() + '.' + postDate.getMonth() + '.' + postDate.getFullYear();
+
+            cardTitle.text(post.user.firstName + ' ' + post.user.lastName + ' said:');
+            cardText.text(post.message);
+            cardFooter.text(formatedDate);
+            card.append(cardTitle, cardText, cardFooter);
+            postsWrap.prepend(card);
         });
+        return posts; //передаю дальше в setDate
+    };
+
+    var setDate = function (posts) {
+        var lastIndex = posts.length - 1;
+
+        lastPostDate = posts[lastIndex].datetime;
+    };
+
+    var watching = function () {
+        setInterval(function () {
+            getPosts(postsByDateUrl + lastPostDate)
+                .then(updateList)
+                .catch(handleError);
+        }, 2000);
+    };
+
+    var updateList = function(newPosts) {
+        if (newPosts.length > 0) {
+            showPosts(newPosts);
+            setDate(newPosts);
+        }
     };
 
     var handleError = function (error) {
@@ -81,8 +111,10 @@ $(function () {
         .then(showProfile)
         .catch(handleError);
 
-    getMessages()
-        .then(showMessages)
+    getPosts(postsUrl)
+        .then(showPosts)
+        .then(setDate)
+        .then(watching)
         .catch(handleError);
 
     btnSendProfile.on('click', function () {
@@ -107,19 +139,19 @@ $(function () {
         profileModal.modal('show');
     });
 
-    btnSendMessage.on('click', function (event) {
+    btnSendPost.on('click', function (event) {
         event.preventDefault();
-        if (inpMessage.val()) {
-            var newMessage = {};
+        if (inpPost.val()) {
+            var newPost = {};
 
-            newMessage.message = inpMessage.val();
+            newPost.message = inpPost.val();
 
-            sendMessage(newMessage)
-                .then(inpMessage.val(''))
+            sendPost(newPost)
+                .then(inpPost.val(''))
                 .catch(handleError);
 
         } else {
-            alert('Enter message!');
+            alert('Enter post text!');
         }
     });
 
